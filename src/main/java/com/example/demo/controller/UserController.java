@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.entity.User;
 import com.example.demo.service.cookieService;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,9 @@ public class UserController {
 
     @Autowired
     private cookieService cookiesService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(path = "/FromZerotoExpert",method = RequestMethod.GET)
     @ResponseBody
@@ -42,4 +47,31 @@ public class UserController {
         response.addCookie(cookie);
         return value;
     }
+
+    @RequestMapping(path = "/FromZerotoExpert/register", method = RequestMethod.GET)
+    public String getRegisterPage() {
+        return "/register";
+    }
+
+    @RequestMapping(path = "/FromZerotoExpert/register",method = RequestMethod.POST)
+    public void register(HttpServletRequest req,HttpServletResponse res)
+    {
+        String username = req.getParameter("username");
+        User user = userService.registers(username);
+
+        if(user == null){
+            User user1 = new User();
+            user1.setUsername(username);
+            user1.setPassword(Integer.parseInt(req.getParameter("password")));
+            user1.setSalt("abc");
+            int insert = userService.insert(user1);
+            if(insert == 1){
+                System.out.println("插入成功");
+            }
+        }else{
+            System.out.println("注册失败");
+        }
+    }
+
+
 }
