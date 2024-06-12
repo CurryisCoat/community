@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -54,11 +56,11 @@ public class UserController {
     }
 
     @RequestMapping(path = "/FromZerotoExpert/register",method = RequestMethod.POST)
-    public void register(HttpServletRequest req,HttpServletResponse res)
-    {
+    public void register(HttpServletRequest req,HttpServletResponse res) throws IOException {
         String username = req.getParameter("username");
         User user = userService.registers(username);
-
+        res.setContentType("text/html;charset=utf-8");
+        PrintWriter writer = res.getWriter();
         if(user == null){
             User user1 = new User();
             user1.setUsername(username);
@@ -66,10 +68,10 @@ public class UserController {
             user1.setSalt("abc");
             int insert = userService.insert(user1);
             if(insert == 1){
-                System.out.println("插入成功");
+                writer.write("注册成功");
             }
         }else{
-            System.out.println("注册失败");
+            res.getWriter().write("用户已存在!");
         }
     }
 
