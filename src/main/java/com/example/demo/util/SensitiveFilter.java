@@ -1,10 +1,13 @@
 package com.example.demo.util;
 
 
+import com.example.demo.entity.DisallowWord;
+import com.example.demo.service.DisallowService;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class SensitiveFilter {
@@ -24,20 +28,29 @@ public class SensitiveFilter {
     // 根节点
     private TrieNode rootNode = new TrieNode();
 
+    @Autowired
+    private DisallowService disallowService;
+
     @PostConstruct
     public void init()
     {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("sensitive-filter.txt");
-        BufferedReader read = new BufferedReader(new InputStreamReader(is));
+//        InputStream is = this.getClass().getClassLoader().getResourceAsStream("sensitive-filter.txt");
+//        BufferedReader read = new BufferedReader(new InputStreamReader(is));
 
-        try {
-            String keyWord;
-            while((keyWord=read.readLine())!=null)
-            {
-                this.addKeyword(keyWord);
-            }
-        } catch (IOException e) {
-            logger.error("加载敏感词文件失败: " + e.getMessage());
+//        try {
+//            String keyWord;
+//            while((keyWord=read.readLine())!=null)
+//            {
+//                this.addKeyword(keyWord);
+//            }
+//        } catch (IOException e) {
+//            logger.error("加载敏感词文件失败: " + e.getMessage());
+//        }
+
+        List<DisallowWord> list = disallowService.wordList();
+        for(DisallowWord t:list){
+            String temp = t.getValue();
+            this.addKeyword(temp);
         }
     }
 
